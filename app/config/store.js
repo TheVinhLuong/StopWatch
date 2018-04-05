@@ -2,7 +2,7 @@ import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
 import logger from "redux-logger";
 import reducer from "../reducers";
-// import rootSaga from "./sagas";
+import stopWatchSaga from "./stopWatchSaga";
 
 const sagaMiddleware = createSagaMiddleware();
 const middleware = [sagaMiddleware];
@@ -11,5 +11,5 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const store = createStore(reducer, applyMiddleware(...middleware));
-// sagaMiddleware.run(rootSaga);
+sagaMiddleware.run(stopWatchSaga);
 export default store;
