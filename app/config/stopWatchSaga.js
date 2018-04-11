@@ -5,30 +5,46 @@ import StopWatch from "../model/StopWatch"
 import { eventChannel } from "redux-saga"
 
 const watchHandler = function* (action) {
-    try{
-    switch (action.type) {
-        case CREATE_LAB:
-            break;
-        case RESET_WATCH:
-            break;
-        case START_WATCH:
-            break;
-        case STOP_WATCH:
-            break;
-    }
-    }catch(error){
+    try {
+        let channel;
+        switch (action.type) {
+            case CREATE_LAB:
+                break;
+            case RESET_WATCH:
+                break;
+            case START_WATCH:
+                console.log("wtf", "start watchiiiiii");
+                channel = yield call(StopWatch);
+                yield call(stopWatchTracker, channel);
+                yield put({
+                    type: START_WATCH,
+                })
+                break;
+            case STOP_WATCH:
+                channel.stop();
+                yield put({
+                    type: STOP_WATCH,
+                })
+                break;
+        }
+    } catch (error) {
     }
 };
+
+const stopWatchTracker = function* (channel) {
+    while (true) {
+        let emitResult = yield take(channel);
+        if (emitResult.type == UPDATE_TIME) {
+            yield put(emitResult)
+        }
+    }
+}
+
 const stopWatchSaga = function* () {
     try {
-        const channel = yield call(StopWatch);
         yield takeEvery(START_WATCH, watchHandler);
-        while (true) {
-            let emitResult  = yield take(channel);
-            if (emitResult.type == UPDATE_TIME) {
-                yield put(emitResult)
-            }
-        }
+        yield takeEvery(STOP_WATCH, watchHandler);
+
     } catch (error) {
     }
 

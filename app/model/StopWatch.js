@@ -24,29 +24,31 @@ export default function () {
 
     function reset() {
         clock = 0;
+
+
+        function update() {
+            emmi({
+                type: UPDATE_TIME,
+                elapsedTime: clock / 1000
+            });
+            var now = Date.now();
+            clock += now - offset;
+            offset = now;
+        }
+
+        function getTime() {
+            return clock;
+        }
+
+        return eventChannel(emitter => {
+            emmi = emitter;
+            reset();
+            start();
+            return () => {
+                stop();
+            };
+        })
     }
-
-    function update() {
-        emmi({
-            type: UPDATE_TIME,
-            elapsedTime: clock/1000
-        });
-        clock += 1;
-    }
-
-    function getTime() {
-        return clock;
-    }
-
-    return eventChannel(emitter => {
-        emmi = emitter;
-        reset();
-        start();
-
-        return () => {
-            stop();
-        };
-    })
 
 
 
